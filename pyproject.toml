@@ -1,0 +1,56 @@
+[project]
+name = "legis-pt-rag"
+version = "0.1.0"
+description = "RAG over Portuguese consolidated legislation (starting with Código do Trabalho)."
+readme = "README.md"
+authors = [
+    { name = "RobertoCCC", email = "robertoctf2000@hotmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.118.0",
+    "uvicorn[standard]>=0.34.0",
+    "pydantic>=2.10.0",
+    "pydantic-settings>=2.7.0",
+    "httpx>=0.28.0",
+    "beautifulsoup4>=4.13.0",
+    "psycopg[binary,pool]>=3.2.0",
+    "pgvector>=0.3.6",
+    "google-genai>=0.7.0",
+    "tenacity>=9.0.0",
+    "typer>=0.15.0",
+]
+
+[project.scripts]
+legis-pt = "legis_pt_rag.cli:app"
+
+[build-system]
+requires = ["uv_build>=0.5.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.25.0",
+    "ruff>=0.8.0",
+    "mypy>=1.13.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/legis_pt_rag/cli.py" = ["B008"]  # typer.Option in defaults is idiomatic
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true
