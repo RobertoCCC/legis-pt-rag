@@ -4,7 +4,15 @@ RAG (Retrieval-Augmented Generation) sobre legislação portuguesa consolidada.
 Começa pela **Constituição da República Portuguesa** (296 artigos, fonte: parlamento.pt),
 e é desenhado para crescer para outros diplomas (Código do Trabalho, Código Civil, etc.).
 
-Stack 100% gratuita: **Neon** (Postgres + pgvector) · **Google Gemini** (embeddings + geração) · **FastAPI** · **Render** (deploy).
+Stack 100% gratuita: **Neon** (Postgres + pgvector) · **Google Gemini** (embeddings + geração) · **FastAPI** · **Vercel** (deploy).
+
+🌐 **API em produção:** https://legis-pt-rag-8p6s.vercel.app
+
+```bash
+curl -X POST https://legis-pt-rag-8p6s.vercel.app/v1/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question": "O que diz a Constituição sobre liberdade de expressão?"}'
+```
 
 > ⚠️ Este projeto é educativo. As respostas geradas **não constituem aconselhamento jurídico**. Consulte sempre um advogado para questões reais.
 
