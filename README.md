@@ -1,12 +1,12 @@
 # legis-pt-rag
 
-RAG (Retrieval-Augmented Generation) sobre legislação portuguesa consolidada.
-Começa pela **Constituição da República Portuguesa** (296 artigos, fonte: parlamento.pt),
-e é desenhado para crescer para outros diplomas (Código do Trabalho, Código Civil, etc.).
+RAG (Retrieval-Augmented Generation) over consolidated Portuguese legislation.
+Starts with the **Constitution of the Portuguese Republic** (296 articles, source: parlamento.pt),
+and is designed to grow to other statutes (Labour Code, Civil Code, etc.).
 
-Stack 100% gratuita: **Neon** (Postgres + pgvector) · **Google Gemini** (embeddings + geração) · **FastAPI** · **Vercel** (deploy).
+100% free stack: **Neon** (Postgres + pgvector) · **Google Gemini** (embeddings + generation) · **FastAPI** · **Vercel** (deploy).
 
-🌐 **API em produção:** https://legis-pt-rag-8p6s.vercel.app
+🌐 **Live API:** https://legis-pt-rag-8p6s.vercel.app
 
 ```bash
 curl -X POST https://legis-pt-rag-8p6s.vercel.app/v1/ask \
@@ -14,68 +14,70 @@ curl -X POST https://legis-pt-rag-8p6s.vercel.app/v1/ask \
   -d '{"question": "O que diz a Constituição sobre liberdade de expressão?"}'
 ```
 
-> ⚠️ Este projeto é educativo. As respostas geradas **não constituem aconselhamento jurídico**. Consulte sempre um advogado para questões reais.
+> ⚠️ This project is educational. Generated answers **do not constitute legal advice**. Always consult a lawyer for real matters.
 
-## Como funciona
+## How it works
 
 ```
 ┌──────────┐   ┌─────────────┐   ┌─────────────────┐   ┌──────────────────┐
-│ pergunta │ → │  embed      │ → │ pgvector top-K  │ → │ Gemini grounded  │
+│ question │ → │  embed      │ → │ pgvector top-K  │ → │ Gemini grounded  │
 │ (PT)     │   │ (Gemini)    │   │ (cosine)        │   │ generation + cite│
 └──────────┘   └─────────────┘   └─────────────────┘   └──────────────────┘
 ```
 
-1. **Ingestão**: faz fetch da CRP, parte em artigos (com hierarquia PARTE/TÍTULO/CAPÍTULO/SECÇÃO), faz chunking por parágrafo numerado.
-2. **Embeddings**: cada chunk é embebido com `gemini-embedding-001` truncado a 768 dims (Matryoshka).
-3. **Armazenamento**: chunks + embeddings em Postgres com índice HNSW (pgvector).
-4. **Resposta**: a pergunta é embebida, faz-se top-K por cosine distance, e o Gemini gera uma resposta fundamentada com citações aos artigos.
+1. **Ingestion**: fetches the CRP, splits into articles (preserving the PARTE/TÍTULO/CAPÍTULO/SECÇÃO hierarchy), then chunks by numbered paragraph.
+2. **Embeddings**: each chunk is embedded with `gemini-embedding-001` truncated to 768 dims (Matryoshka).
+3. **Storage**: chunks + embeddings live in Postgres with an HNSW index (pgvector).
+4. **Answering**: the question is embedded, top-K is retrieved by cosine distance, and Gemini generates a grounded answer with article citations.
 
-## Setup local
+Note: questions and answers stay in **European Portuguese** — that's the source language of the corpus and the target audience.
 
-Requer **Python 3.12+** e [uv](https://docs.astral.sh/uv/).
+## Local setup
+
+Requires **Python 3.12+** and [uv](https://docs.astral.sh/uv/).
 
 ```bash
 uv sync --all-extras --dev
 cp .env.example .env
-# preencher DATABASE_URL (Neon) e GEMINI_API_KEY
+# fill in DATABASE_URL (Neon) and GEMINI_API_KEY
 ```
 
-### Credenciais
+### Credentials
 
-- **Neon**: cria uma conta em [neon.tech](https://neon.tech) (tier gratuito não expira). Copia a connection string para `DATABASE_URL`.
-- **Gemini**: obtém uma API key em [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey). Tier gratuito: 1500 req/dia.
+- **Neon**: create an account at [neon.tech](https://neon.tech) (free tier never expires). Copy the connection string into `DATABASE_URL`.
+- **Gemini**: get an API key at [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey). Free tier: 1500 req/day.
 
-### Ingestão
+### Ingest
 
 ```bash
-uv run legis-pt init       # cria schema pgvector
+uv run legis-pt init       # create pgvector schema
 uv run legis-pt ingest     # fetch + parse + chunk + embed + upsert (~5 min)
 ```
 
-### Perguntar via CLI
+### Ask via CLI
 
 ```bash
 uv run legis-pt ask "Quais são os direitos fundamentais?"
 ```
 
-### Servir a API
+### Serve the API
 
 ```bash
 uv run uvicorn legis_pt_rag.api.main:app --reload
 ```
 
-`POST /v1/ask` com body `{"question": "..."}` devolve `Answer` com texto + citações.
+`POST /v1/ask` with body `{"question": "..."}` returns an `Answer` with text + citations.
 
-## Testes
+## Tests
 
 ```bash
-uv run pytest -v          # 7 testes (parser + chunker)
+uv run pytest -v          # 7 tests (parser + chunker)
 uv run ruff check .       # lint
 uv run ruff format .      # format
 uv run mypy src           # type-check
 ```
 
-## Estrutura
+## Layout
 
 ```
 src/legis_pt_rag/
@@ -90,12 +92,12 @@ src/legis_pt_rag/
 
 ## Roadmap
 
-- [x] CRP completa (296 artigos)
-- [ ] Código do Trabalho
-- [ ] Código Civil
-- [ ] Histórico de versões (acompanhar revisões constitucionais)
-- [ ] Frontend Next.js com chat
+- [x] Full CRP (296 articles)
+- [ ] Labour Code (Código do Trabalho)
+- [ ] Civil Code (Código Civil)
+- [ ] Version history (track constitutional revisions)
+- [ ] Next.js chat frontend
 
-## Licença
+## License
 
-MIT — ver [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE).
