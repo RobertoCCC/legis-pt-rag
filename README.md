@@ -7,6 +7,7 @@ and is designed to grow to other statutes (Labour Code, Civil Code, etc.).
 100% free stack: **Neon** (Postgres + pgvector) · **Google Gemini** (embeddings + generation) · **FastAPI** · **Vercel** (deploy).
 
 🌐 **Live API:** https://legis-pt-rag-8p6s.vercel.app
+💬 **Web chat:** https://legis-pt-rag-web.vercel.app ([source](https://github.com/RobertoCCC/legis-pt-rag-web))
 
 ```bash
 curl -X POST https://legis-pt-rag-8p6s.vercel.app/v1/ask \
