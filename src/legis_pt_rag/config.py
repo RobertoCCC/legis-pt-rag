@@ -21,8 +21,11 @@ class Settings(BaseSettings):
     top_k: int = Field(default=6, description="Number of chunks to retrieve per query.")
 
     cors_origins: list[str] = Field(
-        default_factory=lambda: ["http://localhost:3000"],
-        description="Allowed CORS origins for the web frontend.",
+        default_factory=lambda: ["*"],
+        description=(
+            "Allowed CORS origins. Defaults to '*' because this is a public, "
+            "read-only Q&A API with no auth, cookies, or PII."
+        ),
     )
 
 
